@@ -11,11 +11,11 @@ end
 
 println(q)
 
-source_dict = Dict(:a=>[1,2,3], :b=>[4,5])
+source_dict = Dict(:a => [1,2,3], :b => [4,5])
 
 q = @from i in source_dict begin
 	@from j in i.second
-	@select {Key=i.first,Value=j}
+	@select {Key = i.first,Value = j}
 	@collect DataFrame
 end
 

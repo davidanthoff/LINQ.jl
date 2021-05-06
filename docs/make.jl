@@ -1,10 +1,10 @@
 using Documenter, Query, DataFrames
 
 makedocs(
-	modules = [Query],
-	sitename = "Query.jl",
+	modules=[Query],
+	sitename="Query.jl",
 	analytics="UA-132838790-1",
-	pages = [
+	pages=[
 		"Introduction" => "index.md",
 		"Getting Started" => "gettingstarted.md",
 		"Standalone Query Commands" => "standalonequerycommands.md",
@@ -16,5 +16,5 @@ makedocs(
 )
 
 deploydocs(
-    repo = "github.com/queryverse/Query.jl.git"
+    repo="github.com/queryverse/Query.jl.git"
 )

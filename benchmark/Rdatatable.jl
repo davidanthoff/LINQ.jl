@@ -4,7 +4,7 @@ using StatsBase, RCall, Query, DataFrames, DataFramesMeta, DataTables
 using IndexedTables
 using IndexedTables.Table
 
-function R_datatable(N,K)
+function R_datatable(N, K)
 
     R"""
     library(data.table)
@@ -43,7 +43,7 @@ function R_datatable(N,K)
 end
 
 
-function R_dplyr(N,K)
+function R_dplyr(N, K)
 
     R"""
     library(dplyr)
@@ -81,217 +81,217 @@ function R_dplyr(N,K)
     return timings
 end
 
-function createDataFrame(N::Int,K::Int)
+function createDataFrame(N::Int, K::Int)
 
-    df = DataFrame(id1 = sample(["id$x" for x in 1:K],N),
-                   id2 = sample(["id$x" for x in 1:K],N),
-                   id3 = sample(["id$x" for x in 1:(N/K)],N),
-                   id4 = sample(1:K,N),
-                   id5 = sample(1:K,N),
-                   id6 = sample(1:(N/K),N),
-                   v1 = sample(1:5,N),
-                   v2 = sample(1:5,N),
-                   v3 = sample(round.(rand(100),4),N))
-
-    return df
-end
-
-function createDataTable(N::Int,K::Int)
-
-    df = DataTable(id1 = sample(["id$x" for x in 1:K],N),
-                   id2 = sample(["id$x" for x in 1:K],N),
-                   id3 = sample(["id$x" for x in 1:(N/K)],N),
-                   id4 = sample(1:K,N),
-                   id5 = sample(1:K,N),
-                   id6 = sample(1:(N/K),N),
-                   v1 = sample(1:5,N),
-                   v2 = sample(1:5,N),
-                   v3 = sample(round.(rand(100),4),N))
+    df = DataFrame(id1=sample(["id$x" for x in 1:K], N),
+                   id2=sample(["id$x" for x in 1:K], N),
+                   id3=sample(["id$x" for x in 1:(N / K)], N),
+                   id4=sample(1:K, N),
+                   id5=sample(1:K, N),
+                   id6=sample(1:(N / K), N),
+                   v1=sample(1:5, N),
+                   v2=sample(1:5, N),
+                   v3=sample(round.(rand(100), 4), N))
 
     return df
 end
-function createIndexedTable(N::Int,K::Int)
 
-    df = Table(Columns(id1 = sample(["id$x" for x in 1:K],N),
-                   id2 = sample(["id$x" for x in 1:K],N),
-                   id3 = sample(["id$x" for x in 1:(N/K)],N),
-                   id4 = sample(1:K,N),
-                   id5 = sample(1:K,N),
-                   id6 = sample(1:(N/K),N),
-                   v1 = sample(1:5,N),
-                   v2 = sample(1:5,N),
-                   v3 = sample(round.(rand(100),4),N)))
+function createDataTable(N::Int, K::Int)
+
+    df = DataTable(id1=sample(["id$x" for x in 1:K], N),
+                   id2=sample(["id$x" for x in 1:K], N),
+                   id3=sample(["id$x" for x in 1:(N / K)], N),
+                   id4=sample(1:K, N),
+                   id5=sample(1:K, N),
+                   id6=sample(1:(N / K), N),
+                   v1=sample(1:5, N),
+                   v2=sample(1:5, N),
+                   v3=sample(round.(rand(100), 4), N))
+
+    return df
+end
+function createIndexedTable(N::Int, K::Int)
+
+    df = Table(Columns(id1=sample(["id$x" for x in 1:K], N),
+                   id2=sample(["id$x" for x in 1:K], N),
+                   id3=sample(["id$x" for x in 1:(N / K)], N),
+                   id4=sample(1:K, N),
+                   id5=sample(1:K, N),
+                   id6=sample(1:(N / K), N),
+                   v1=sample(1:5, N),
+                   v2=sample(1:5, N),
+                   v3=sample(round.(rand(100), 4), N)))
 
     return df
 end
 
 function benches(df::DataFrame)
 
-    # timings
+    #  timings
     ti = Dict()
 
     ti[:sum1] = @elapsed @from i in df begin
                              @group i by i.id1 into g
-                             @select {r=sum(g.v1)}
+                             @select {r = sum(g.v1)}
                              @collect DataFrame
                          end
     ti[:sum2] = @elapsed @from i in df begin
                              @group i by i.id1 into g
-                             @select {r=sum(g.v1)}
+                             @select {r = sum(g.v1)}
                              @collect DataFrame
                          end
     ti[:sum3] = @elapsed @from i in df begin
-                             @group i by (i.id1,i.id2) into g
-                             @select {r=sum(g.v1)}
+                             @group i by (i.id1, i.id2) into g
+                             @select {r = sum(g.v1)}
                              @collect DataFrame
                          end
     ti[:sum4] = @elapsed @from i in df begin
-                             @group i by (i.id1,i.id2) into g
-                             @select {r=sum(g.v1)}
+                             @group i by (i.id1, i.id2) into g
+                             @select {r = sum(g.v1)}
                              @collect DataFrame
                          end
     ti[:sum_mean1] = @elapsed @from i in df begin
                              @group i by i.id3 into g
-                             @select {s=sum(g.v1),m=mean(g.v3)}
+                             @select {s = sum(g.v1),m = mean(g.v3)}
                              @collect DataFrame
                          end
     ti[:sum_mean2] = @elapsed @from i in df begin
                              @group i by i.id3 into g
-                             @select {s=sum(g.v1),m=mean(g.v3)}
+                             @select {s = sum(g.v1),m = mean(g.v3)}
                              @collect DataFrame
                          end
     ti[:mean7_9_by_id4_1] = @elapsed @from i in df begin
                              @group i by i.id4 into g
-                             @select {m7=mean(g.v1),m8=mean(g.v2),m9=mean(g.v3)}
+                             @select {m7 = mean(g.v1),m8 = mean(g.v2),m9 = mean(g.v3)}
                              @collect DataFrame
                          end
     ti[:mean7_9_by_id4_2] = @elapsed @from i in df begin
                              @group i by i.id4 into g
-                             @select {m7=mean(g.v1),m8=mean(g.v2),m9=mean(g.v3)}
+                             @select {m7 = mean(g.v1),m8 = mean(g.v2),m9 = mean(g.v3)}
                              @collect DataFrame
                          end
     ti[:sum7_9_by_id6_1] = @elapsed @from i in df begin
                              @group i by i.id6 into g
-                             @select {m7=mean(g.v1),m8=mean(g.v2),m9=mean(g.v3)}
+                             @select {m7 = mean(g.v1),m8 = mean(g.v2),m9 = mean(g.v3)}
                              @collect DataFrame
                          end
     ti[:sum7_9_by_id6_2] = @elapsed @from i in df begin
                              @group i by i.id6 into g
-                             @select {m7=mean(g.v1),m8=mean(g.v2),m9=mean(g.v3)}
+                             @select {m7 = mean(g.v1),m8 = mean(g.v2),m9 = mean(g.v3)}
                              @collect DataFrame
                          end
     return ti
 end
 function benches(df::DataTable)
 
-    # timings
+    #  timings
     ti = Dict()
 
     ti[:sum1] = @elapsed @from i in df begin
                              @group i by i.id1 into g
-                             @select {r=sum(g.v1)}
+                             @select {r = sum(g.v1)}
                              @collect DataFrame
                          end
     ti[:sum2] = @elapsed @from i in df begin
                              @group i by i.id1 into g
-                             @select {r=sum(g.v1)}
+                             @select {r = sum(g.v1)}
                              @collect DataFrame
                          end
     ti[:sum3] = @elapsed @from i in df begin
-                             @group i by (i.id1,i.id2) into g
-                             @select {r=sum(g.v1)}
+                             @group i by (i.id1, i.id2) into g
+                             @select {r = sum(g.v1)}
                              @collect DataFrame
                          end
     ti[:sum4] = @elapsed @from i in df begin
-                             @group i by (i.id1,i.id2) into g
-                             @select {r=sum(g.v1)}
+                             @group i by (i.id1, i.id2) into g
+                             @select {r = sum(g.v1)}
                              @collect DataFrame
                          end
     ti[:sum_mean1] = @elapsed @from i in df begin
                              @group i by i.id3 into g
-                             @select {s=sum(g.v1),m=mean(g.v3)}
+                             @select {s = sum(g.v1),m = mean(g.v3)}
                              @collect DataFrame
                          end
     ti[:sum_mean2] = @elapsed @from i in df begin
                              @group i by i.id3 into g
-                             @select {s=sum(g.v1),m=mean(g.v3)}
+                             @select {s = sum(g.v1),m = mean(g.v3)}
                              @collect DataFrame
                          end
     ti[:mean7_9_by_id4_1] = @elapsed @from i in df begin
                              @group i by i.id4 into g
-                             @select {m7=mean(g.v1),m8=mean(g.v2),m9=mean(g.v3)}
+                             @select {m7 = mean(g.v1),m8 = mean(g.v2),m9 = mean(g.v3)}
                              @collect DataFrame
                          end
     ti[:mean7_9_by_id4_2] = @elapsed @from i in df begin
                              @group i by i.id4 into g
-                             @select {m7=mean(g.v1),m8=mean(g.v2),m9=mean(g.v3)}
+                             @select {m7 = mean(g.v1),m8 = mean(g.v2),m9 = mean(g.v3)}
                              @collect DataFrame
                          end
     ti[:sum7_9_by_id6_1] = @elapsed @from i in df begin
                              @group i by i.id6 into g
-                             @select {m7=mean(g.v1),m8=mean(g.v2),m9=mean(g.v3)}
+                             @select {m7 = mean(g.v1),m8 = mean(g.v2),m9 = mean(g.v3)}
                              @collect DataFrame
                          end
     ti[:sum7_9_by_id6_2] = @elapsed @from i in df begin
                              @group i by i.id6 into g
-                             @select {m7=mean(g.v1),m8=mean(g.v2),m9=mean(g.v3)}
+                             @select {m7 = mean(g.v1),m8 = mean(g.v2),m9 = mean(g.v3)}
                              @collect DataFrame
                          end
     return ti
 end
 function benches(df::IndexedTable)
 
-    # timings
+    #  timings
     ti = Dict()
 
     ti[:sum1] = @elapsed @from i in df begin
                              @group i by i.id1 into g
-                             @select {r=sum(g.v1)}
+                             @select {r = sum(g.v1)}
                              @collect DataFrame
                          end
     ti[:sum2] = @elapsed @from i in df begin
                              @group i by i.id1 into g
-                             @select {r=sum(g.v1)}
+                             @select {r = sum(g.v1)}
                              @collect DataFrame
                          end
     ti[:sum3] = @elapsed @from i in df begin
-                             @group i by (i.id1,i.id2) into g
-                             @select {r=sum(g.v1)}
+                             @group i by (i.id1, i.id2) into g
+                             @select {r = sum(g.v1)}
                              @collect DataFrame
                          end
     ti[:sum4] = @elapsed @from i in df begin
-                             @group i by (i.id1,i.id2) into g
-                             @select {r=sum(g.v1)}
+                             @group i by (i.id1, i.id2) into g
+                             @select {r = sum(g.v1)}
                              @collect DataFrame
                          end
     ti[:sum_mean1] = @elapsed @from i in df begin
                              @group i by i.id3 into g
-                             @select {s=sum(g.v1),m=mean(g.v3)}
+                             @select {s = sum(g.v1),m = mean(g.v3)}
                              @collect DataFrame
                          end
     ti[:sum_mean2] = @elapsed @from i in df begin
                              @group i by i.id3 into g
-                             @select {s=sum(g.v1),m=mean(g.v3)}
+                             @select {s = sum(g.v1),m = mean(g.v3)}
                              @collect DataFrame
                          end
     ti[:mean7_9_by_id4_1] = @elapsed @from i in df begin
                              @group i by i.id4 into g
-                             @select {m7=mean(g.v1),m8=mean(g.v2),m9=mean(g.v3)}
+                             @select {m7 = mean(g.v1),m8 = mean(g.v2),m9 = mean(g.v3)}
                              @collect DataFrame
                          end
     ti[:mean7_9_by_id4_2] = @elapsed @from i in df begin
                              @group i by i.id4 into g
-                             @select {m7=mean(g.v1),m8=mean(g.v2),m9=mean(g.v3)}
+                             @select {m7 = mean(g.v1),m8 = mean(g.v2),m9 = mean(g.v3)}
                              @collect DataFrame
                          end
     ti[:sum7_9_by_id6_1] = @elapsed @from i in df begin
                              @group i by i.id6 into g
-                             @select {m7=mean(g.v1),m8=mean(g.v2),m9=mean(g.v3)}
+                             @select {m7 = mean(g.v1),m8 = mean(g.v2),m9 = mean(g.v3)}
                              @collect DataFrame
                          end
     ti[:sum7_9_by_id6_2] = @elapsed @from i in df begin
                              @group i by i.id6 into g
-                             @select {m7=mean(g.v1),m8=mean(g.v2),m9=mean(g.v3)}
+                             @select {m7 = mean(g.v1),m8 = mean(g.v2),m9 = mean(g.v3)}
                              @collect DataFrame
                          end
     return ti
@@ -299,7 +299,7 @@ end
 
 function DfMeta_benches(df::DataFrame)
 
-    # timings
+    #  timings
     ti = Dict()
 
     ti[:sum1] = @elapsed @linq df |>
@@ -315,75 +315,75 @@ function DfMeta_benches(df::DataFrame)
                     @by([:id1,:id2],r = sum(:v1))
 
     ti[:sum_mean1] = @elapsed @linq df |>
-                    @by(:id3,s = sum(:v1),m=mean(:v1))
+                    @by(:id3,s = sum(:v1),m = mean(:v1))
 
     ti[:sum_mean2] = @elapsed @linq df |>
-                    @by(:id3,s = sum(:v1),m=mean(:v1))
+                    @by(:id3,s = sum(:v1),m = mean(:v1))
 
     ti[:mean7_9_by_id4_1] = @elapsed @linq df |>
-                        @by(:id4,m7=mean(:v1),m8=mean(:v2),m9=mean(:v3))
+                        @by(:id4,m7 = mean(:v1),m8 = mean(:v2),m9 = mean(:v3))
 
     ti[:mean7_9_by_id4_2] = @elapsed @linq df |>
-                        @by(:id4,m7=mean(:v1),m8=mean(:v2),m9=mean(:v3))
+                        @by(:id4,m7 = mean(:v1),m8 = mean(:v2),m9 = mean(:v3))
 
     ti[:sum7_9_by_id6_1] = @elapsed @linq df |>
-                        @by(:id6,m7=mean(:v1),m8=mean(:v2),m9=mean(:v3))
+                        @by(:id6,m7 = mean(:v1),m8 = mean(:v2),m9 = mean(:v3))
 
     ti[:sum7_9_by_id6_2] = @elapsed @linq df |>
-                        @by(:id6,m7=mean(:v1),m8=mean(:v2),m9=mean(:v3))
+                        @by(:id6,m7 = mean(:v1),m8 = mean(:v2),m9 = mean(:v3))
 
     return ti
 end
 
 function run_benches(N=1_000_000;K=100)
     # get small data for JIT warmup
-    d_ = createDataFrame(10,3)
-    dt_ = createDataTable(10,3)
-    di_ = createIndexedTable(10,3)
+    d_ = createDataFrame(10, 3)
+    dt_ = createDataTable(10, 3)
+    di_ = createIndexedTable(10, 3)
 
 
-    # warm up julia benchmarks
+    #  warm up julia benchmarks
     benches(d_);
     benches(dt_);
     benches(di_);
     DfMeta_benches(d_);
 
-    # get real data
-    d = createDataFrame(N,K)
+    #  get real data
+    d = createDataFrame(N, K)
     # measure DataFrames
     query_df = benches(d)
     meta = DfMeta_benches(d)
     d = 0
     gc()
     # measure DataTables
-    dt = createDataTable(N,K)
+    dt = createDataTable(N, K)
     query_dt = benches(dt)
     dt = 0
     gc()
     # measure IndexedTables
-    di = createIndexedTable(N,K)
+    di = createIndexedTable(N, K)
     query_di = benches(di)
     di = 0
     gc()
 
 
     # get R data.table time
-    R = R_datatable(N,K)
+    R = R_datatable(N, K)
 
     # get R dplyr time
-    Rdplyr = R_dplyr(N,K)
+    Rdplyr = R_dplyr(N, K)
 
     # get
     k = collect(keys(query_df))
-    out = DataFrame(bench = k,Query_DF = [query_df[kk] for kk in k],Query_DT= [query_dt[kk] for kk in k],Query_idxT= [query_di[kk] for kk in k],DataFramesMeta=[meta[kk] for kk in k], Rdplyr=[Rdplyr[kk] for kk in k], Rdatatable=[R[kk] for kk in k])
-    sort!(out,cols=:bench)
+    out = DataFrame(bench=k, Query_DF=[query_df[kk] for kk in k], Query_DT=[query_dt[kk] for kk in k], Query_idxT=[query_di[kk] for kk in k], DataFramesMeta=[meta[kk] for kk in k], Rdplyr=[Rdplyr[kk] for kk in k], Rdatatable=[R[kk] for kk in k])
+    sort!(out, cols=:bench)
     rel = deepcopy(out)
-    rel = @transform(rel,Query_DF = :Query_DF./:Rdatatable, Query_DT = :Query_DT./:Rdatatable, Query_idxT = :Query_idxT./:Rdatatable, DataFramesMeta = :DataFramesMeta ./ :Rdatatable, Rdplyr = :Rdplyr ./ :Rdatatable, Rdatatable = 1.0)
-    return (out,rel)
+    rel = @transform(rel,Query_DF = :Query_DF ./ :Rdatatable, Query_DT = :Query_DT ./ :Rdatatable, Query_idxT = :Query_idxT ./ :Rdatatable, DataFramesMeta = :DataFramesMeta ./ :Rdatatable, Rdplyr = :Rdplyr ./ :Rdatatable, Rdatatable = 1.0)
+    return (out, rel)
 end
 
 function run_all()
-    d=Dict()
+    d = Dict()
     for n in [10_000, 100_000, 1_000_000, 2_000_000]
         d[n] = run_benches(n)
         gc()

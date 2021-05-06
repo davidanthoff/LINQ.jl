@@ -2,7 +2,7 @@ module Query
 
 import IterableTables
 using DataValues
-using MacroTools: postwalk
+using MacroTools:postwalk
 using QueryOperators
 
 export @from, @query, @count, Grouping, key
@@ -23,17 +23,17 @@ include("standalone_query_macros.jl")
 include("table_query_macros.jl")
 
 macro from(range::Expr, body::Expr)
-	if range.head!=:call || (range.args[1]!=:in && range.args[1]!=in)
+	if range.head != :call || (range.args[1] != :in && range.args[1] != in)
 		error()
 	end
 
-	if body.head!=:block
+	if body.head != :block
 		error()
 	end
 
-	body.args = filter(i->!isa(i, LineNumberNode),body.args)
+	body.args = filter(i -> !isa(i, LineNumberNode), body.args)
 
-	insert!(body.args,1,:( @from $(range.args[2]) in $(range.args[3]) ))
+	insert!(body.args, 1, :( @from $(range.args[2]) in $(range.args[3]) ))
 
 	translate_query(body)
 
@@ -41,7 +41,7 @@ macro from(range::Expr, body::Expr)
 end
 
 macro query(range::Symbol, body::Expr)
-	if body.head!=:block
+	if body.head != :block
 		error()
 	end
 
