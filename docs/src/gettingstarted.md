@@ -88,7 +88,7 @@ If you want to use a function that does not support missing values out of the bo
 
 ## Piping data through a LINQ style query
 
-LINQ style queries can also be intgrated into data pipelines that are constructed via the `|>` operator. Such queries are started with the `@query` macro instead of
+LINQ style queries can also be integrated into data pipelines that are constructed via the `|>` operator. Such queries are started with the `@query` macro instead of
 the `@from` macro. The main difference between those two macros is that the `@query` macro does not take an argument for the data source, instead the data source needs to be piped into the query. In practice the syntax for the `@query` macro looks like this:
 
 ```julia
