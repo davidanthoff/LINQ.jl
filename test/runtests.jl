@@ -492,6 +492,12 @@ q = collect(@map(source_df, i->i.children))
 @test isa(q, Vector{Int})
 @test q==[3,5,2]
 
+c = 3
+ex1 = :{a = 1, b = 2, nt1..., d = 5, c}
+ex1_replaced = Query.helper_namedtuples_replacement(ex1)
+nt1 = (w = 101, x = 102)
+@test eval(ex1_replaced) == (a = 1, b = 2, w = 101, x = 102, d = 5, c = 3)
+
 include("test_dplyr-syntax.jl")
 include("test_pipesyntax.jl")
 include("test_macros.jl")
