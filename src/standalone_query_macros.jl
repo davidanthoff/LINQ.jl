@@ -182,6 +182,19 @@ macro map(f)
         helper_namedtuples_replacement
 end
 
+macro gather(args...)
+    parsedArgs = ()
+    for arg in args
+        if typeof(arg) == Expr
+            m1 = match(r"^-:(.+)", string(arg))
+            parsedArgs = (parsedArgs..., :(QueryOperators.Not($(QuoteNode(Symbol(m1[1]))))))
+        else
+            parsedArgs = (parsedArgs..., arg)
+        end
+    end
+    :( i -> QueryOperators.gather(QueryOperators.query(i), $(parsedArgs...)))
+end
+
 macro mapmany(source, collectionSelector,resultSelector)
     collectionSelector_as_anonym_func = helper_replace_anon_func_syntax(collectionSelector)
     resultSelector_as_anonym_func = helper_replace_anon_func_syntax(resultSelector)

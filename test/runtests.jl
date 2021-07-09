@@ -494,6 +494,7 @@ q = collect(@map(source_df, i->i.children))
 
 include("test_dplyr-syntax.jl")
 include("test_pipesyntax.jl")
+include("test_standalone.jl")
 include("test_macros.jl")
 
 # Only run doctests on 64, all the output checks get messed up with

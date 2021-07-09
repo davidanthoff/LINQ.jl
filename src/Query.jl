@@ -8,7 +8,7 @@ using QueryOperators
 export @from, @query, @count, Grouping, key
 
 export @map, @filter, @groupby, @orderby, @orderby_descending, @unique,
-	@thenby, @thenby_descending, @groupjoin, @join, @mapmany, @take, @drop
+	@thenby, @thenby_descending, @groupjoin, @join, @mapmany, @take, @drop, @gather
 
 export @select, @rename, @mutate, @disallowna, @dropna, @replacena
 
